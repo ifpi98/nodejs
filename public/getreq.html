@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>get Request</title>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+
+</head>
+<body>
+
+    <button id="get">GET</button>
+    <button id="post">POST</button>
+    <button id="put">PUT</button>
+    <button id="delete">DELETE</button>
+    <hr>
+    <h1> input</h1>
+    순번 : <input type="text" id="num"><br>
+    이름 : <input id="name" name="name"><br>
+    가격 : <input id="price" name="price">
+    <h1> output</h1>
+    <textarea id="output" disabled cols="40" rows="15"></textarea>
+    
+    <script>
+        $('#get').click(function(){
+            $.ajax({
+                url:'/products',
+                type:'get',
+                dataType:'text',
+                success:function(data){
+                    $('#output').val(data);
+                }
+            })
+        })
+        $('#post').click(function(){
+            $.ajax({
+                url:'/products',
+                type:'post',
+                dataType:'text',
+                data:{
+                    name:$('#name').val(),
+                    price:$('#price').val()
+                },
+                success:function(data){
+                    $('#output').val(data);
+                },
+                error:function(){}
+            })
+        })
+        $('#put').click(function(){
+            var id = $('#num').val();
+            $.ajax({
+                url:'/products/' + id,
+                type:'put',
+                dataType:'text',
+                data:{
+                    name:$('#name').val(),
+                    price:$('#price').val()
+                },
+                success:function(data){
+                    $('#output').val(data);
+                }
+            })
+        })
+
+        //삭제하기
+        $('#delete').click(function(){
+            var id = $('#num').val();
+            $.ajax({
+                url:'/products/' + id,
+                type:'delete',
+                dataType:'text',
+                // data:{
+                //     name:$('#name').val(),
+                //     price:$('#price').val()
+                // },
+                success:function(data){
+                    $('#output').val(data);
+                }
+            })
+        })
+
+    </script>
+
+</body>
+</html>
