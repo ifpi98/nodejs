@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품추가</title>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+</head>
+
+<body>
+
+    <div>
+        <form id="insert_form">
+            <fieldset>
+                <table>
+                    <tr>
+                        <td><label>상품명</label></td>
+                        <td><input type="text" name="name" id="name" required></td>
+                    </tr>
+                    <tr>
+                        <td><label>모델 번호</label></td>
+                        <td><input type="text" name="modelnumber" id="modelnumber" required></td>
+                    </tr>
+                    <tr>
+                        <td><label>시리즈</label></td>
+                        <td><input type="text" name="series" id="series" required></td>
+                    </tr>
+                </table>
+                <input type="submit" value="추가">
+            </fieldset>
+        </form>
+        <input type="text" id="id">
+        <input type="button" value="조회" id="select">
+        <input type="button" value="삭제" id="delete">
+        <input type="button" value="수정" id="update">
+        <br>
+        <input type="text" id="id2">
+        <input type="text" id="id3">
+        <input type="button" value="삭제 시스템" id="delete2">
+
+    </div>
+    <hr>
+    <table id="output" border="1">
+
+    </table>
+
+    <script>
+        // 전송 버튼 클릭시 데이터 추가하기
+        $('#insert_form').submit(function (e) {
+            // 입력 폼에 입력한 데이터를 전송하기
+            var data = $(this).serialize();
+            // console.log(data);
+
+            $.post('/products', data, function () {
+                $.getJSON('/products', function (d) {
+                    $('#output').empty();
+                    // console.log(d);
+                    $(d).each(function (i, item) {
+                        var out = '';
+                        out += "<tr>";
+                        out += "<td>" + item.id + "</td>";
+                        out += "<td>" + item.name + "</td>";
+                        out += "<td>" + item.modelnumber + "</td>";
+                        out += "<td>" + item.series + "</td>";
+                        out += "</tr>";
+                        $('#output').append(out);
+                    })
+
+                })
+            })
+
+            e.preventDefault();     // 기본 이벤트 제거
+        })
+    </script>
+
+    <script>
+        //id로 조회하기
+        $('#select').click(function () {
+            // ajax를 수행하기
+            var id = $('#id').val();
+            var str = '/products/' + id;
+            console.log(str);
+
+            $.getJSON(str, function (d) {
+                $('#output').empty();
+                console.log(d);
+
+                $(d).each(function (i, item) {
+                    var out = '';
+                    // out += "<tr>";
+                    // out += "<th>아이디</th><th>이름</th><th>모델명</th>"
+                    // out += "<th>시리즈</th></tr>"
+                    out += "<tr>";
+                    out += "<td>" + item.id + "</td>";
+                    out += "<td>" + item.name + "</td>";
+                    out += "<td>" + item.modelnumber + "</td>";
+                    out += "<td>" + item.series + "</td>";
+                    out += "</tr>";
+                    $('#output').append(out);
+                })
+
+            })
+
+        });
+
+
+    </script>
+
+    <script>
+        //id로 삭제하기
+        $('#delete').click(function () {
+            // ajax를 수행하기
+            var id = $('#id').val();
+            var str = '/products/' + id;
+            console.log(str);
+
+            $.ajax({
+                url: str,
+                type: 'DELETE',
+                header: {
+                    'Content-Type': "application/json"
+                },
+                success: function (result) {
+                    // 삭제 작업이 성공적으로 완료된 경우에 실행할 코드
+                    console.log(result);
+                    $('#output').empty();
+                    // var out = id + '를 삭제하였습니다.';
+                    $('#output').append(result);
+
+                },
+                error: function (xhr, status, error) {
+                    // 삭제 작업이 실패한 경우에 실행할 코드
+                    $('#output').empty();
+                    var out = id + '를 삭제 실패하였습니다.';
+                    $('#output').append(out);
+                }
+            });
+
+        });
+
+
+    </script>
+
+    <script>
+        //id로 범위 삭제하기
+        $('#delete2').click(function () {
+            // ajax를 수행하기
+            var id2 = $('#id2').val();
+            var id3 = $('#id3').val();
+            // var str = '/products/' + id;
+            // console.log(str);
+
+            for (var i = 0; i < id3 - id2 + 1; i++) {
+                var str = '/products/' + (Number(id2) + i);
+                console.log(str);
+                $.ajax({
+                    url: str,
+                    type: 'DELETE',
+                    header: {
+                        'Content-Type': "application/json"
+                    },
+                    success: function (result) {
+                        // 삭제 작업이 성공적으로 완료된 경우에 실행할 코드
+                        console.log(result);
+                        $('#output').empty();
+                        // var out = id + '를 삭제하였습니다.';
+                        $('#output').append(result);
+
+                    },
+                    error: function (xhr, status, error) {
+                        // 삭제 작업이 실패한 경우에 실행할 코드
+                        $('#output').empty();
+                        var out = id + '를 삭제 실패하였습니다.';
+                        $('#output').append(out);
+                    }
+                });
+
+            }
+
+        });
+
+
+    </script>
+
+    <script>
+        //데이터 수정하기
+        $('#update').click(function () {
+            var id = $('#id').val();
+            var str = '/products/' + id;
+            // console.log(str);
+            var name = $('#name').val();
+            var modelnumber = $('#modelnumber').val();
+            var series = $('#series').val();
+
+            // ajax를 수행하기
+            $.ajax({
+                url: str,
+                type: 'put',
+                dataType:'JSON',
+                // header: {
+                //     'Content-Type': "application/json"
+                // },
+                data:{name, modelnumber, series},
+                success: function (result,status) {
+                    // 삭제 작업이 성공적으로 완료된 경우에 실행할 코드
+                    console.log("result:", result);
+                    console.log(result.affectedRows);
+                    if(result.affectedRows>0){
+                        $('#output').empty();
+                    // var out = id + '를 삭제하였습니다.';
+                    $(`<h2>${id} 수정완료..</h2>`).appendTo('body');
+                    // $('#output').append(result);
+                    } else{
+                        $(`<h2>${id} 가 없다.</h2>`).appendTo('body');
+                    }
+
+                    
+
+                },
+                error: function (xhr, status, error) {
+                    // 삭제 작업이 실패한 경우에 실행할 코드
+                    $('#output').empty();
+                    var out = id + '를 삭제 실패하였습니다.';
+                    $('#output').append(out);
+                }
+            });
+
+        });
+
+
+    </script>
+
+
+</body>
+
+</html>

@@ -92,6 +92,7 @@ app.del('/products/:id', function (req, res) {
 
 });
 
+//parameter
 app.all ('/parameter', function(req,res){
     var name = req.body.name || req.query.name;
     var modelnumber = req.body.modelnumber || req.query.modelnumber;
@@ -118,6 +119,8 @@ app.all ('/parameter', function(req,res){
 http.createServer(app).listen(52273, function () {
     console.log("Server Running at ..");
     console.log("http://127.0.0.1:52273");
+    console.log("http://127.0.0.1:52273/form1.html");
+    
 })
 
 // var query = 'select * from products';
