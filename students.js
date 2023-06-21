@@ -28,19 +28,16 @@ app.get('/students', function (req, res) {
 
 // 개별 조회
 app.get('/students/:id', function (req, res) {
-    // var id = Number(req.param('id'));
-    // // var query = 'select * from products where id=' + id;
-    // var query = 'select * from products where id=?';
-    // client.query(query,[id], function (err, result) {
-    //     if(result==""){
-    //         res.send("없는 데이터입니다.");
-    //     } else{
-    //     // console.log(result);
-    //     res.send(result);
-    //     }
-    // });
+    var id=req.params.id;
+    var sql="select * from students where id='"+id+"'";
+
+    client.query(sql,[id],function(err,result) {
+        res.send(result);
+        // res.redi
+    });
 
 });
+
 
 // 데이터 추가, 회원 가입
 app.post('/students', function (req, res) {
@@ -54,8 +51,15 @@ app.post('/students', function (req, res) {
     
     var sql = "insert into students (id, name, password, email, gender) values (?,?,?,?,?)";
     client.query(sql,[id, name, password, email, gender], function (err, result) {
-        // console.log(result);
-        res.redirect("member_ok.html");
+        console.log("err:", err);
+        // console.log("result:", result);
+        if(!res.status(200)){
+            res.send(err)
+        } else {
+            // res.send(result)
+            res.redirect("member_ok.html");
+        }
+        
         // if(err){
         //     console.log("error: ", err.sqlMessage);
         // }
@@ -69,16 +73,27 @@ app.post('/students', function (req, res) {
 
 });
 app.put('/students/:id', function (req, res) { 
-    // var id = req.params.id;
-    // var name = req.body.name;
-    // var modelnumber = req.body.modelnumber;
-    // var series = req.body.series;
-    // var query = "update products set name=?, modelnumber=?, series=? where id=?";
-    // console.log(query);
-    // client.query(query,[name, modelnumber, series, id], function (err, result) {
-    //     // console.log(result);
-    //     res.send(result);
-    // });
+    var id = req.body.id;
+    var name = req.body.name;
+    var password = req.body.password;
+    var email = req.body.email;
+    var gender = req.body.gender;
+    var data = {id, name, password, email, gender};
+    // console.log("this is a", data);
+
+    var sql = "update students set name=?, password=?, email=?, gender=? where id=?";
+    client.query(sql,[name, password, email, gender, id], function (err, result) {
+        
+        if(err){
+            res.send(err)
+        } else {
+            res.send(result)
+            // res.redirect("member_ok.html");
+        }
+        
+        // res.redirect("../member_ok.html");
+        // res.send(err || result);
+    });
 
 });
 app.del('/students/:id', function (req, res) { 

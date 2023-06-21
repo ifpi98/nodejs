@@ -11,9 +11,11 @@
 </head>
 
 <body>
-    <h1>회원 가입 완료되었습니다.</h1>
+    <h1>회원 가입 및 수정이 완료되었습니다.</h1>
     <a href="#" onclick="memberLoad()">회원목록보기</a>
     <a href="#" onclick="memberLoad2()">(부트스트랩)회원목록보기</a>
+    <a href="member.html">회원가입</a>
+    <a href="member_modify.html">회원정보수정</a>
     <div id="content"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
@@ -27,12 +29,12 @@
                 url: '/students',
                 type: 'get',
                 // dataType:'JSON',
-                success: function(data) {
+                success: function (data) {
                     var out = "";
-                    $(data).each((i,item)=>{
+                    $(data).each((i, item) => {
                         // console.log(i,item);
                         out += "<ol>";
-                        out += `<li>id : ${item.id} <button id=${item.id}>삭제</button> </li>`;
+                        out += `<li class="a_id">id : <a href="#">${item.id}</a> <button id=${item.id}>삭제</button> </li>`
                         out += `<li>name : ${item.name} </li>`;
                         out += `<li>password : ${item.password} </li>`;
                         out += `<li>email : ${item.email} </li>`;
@@ -50,9 +52,9 @@
                 url: '/students',
                 type: 'get',
                 // dataType:'JSON',
-                success: function(data) {
+                success: function (data) {
                     var out = "<div class='container'>";
-                    $(data).each((i,item)=>{
+                    $(data).each((i, item) => {
                         // console.log(i,item);
                         out += "<ol class='list-group mt-3'>";
                         out += `<li class='list-group-item active'>id : ${item.id} <button id=${item.id}>삭제</button></li>`;
@@ -69,22 +71,71 @@
         }
 
         //삭제버튼 클릭해서 서버에 삭제 요청하기
-        $(document).on('click','button',function(e){
+        $(document).on('click', 'button', function (e) {
             // var id = $(this).context.id
             var id = e.currentTarget.id;
             // var id = e.srcElement.id;
             console.log(id);
             $.ajax({
-                url:'/students/'+id,
-                type:'delete',
-                success:function(data){
+                url: '/students/' + id,
+                type: 'delete',
+                success: function (data) {
                     memberLoad();   // 전체목록보기
                 }
             })
 
         });
-        
-        
+
+        //a를 클릭했을때 개별조회를 하기위한
+        // $(document).on('click', 'a', function (e) {
+        //     $('#content').empty();
+        //     var id = e.currentTarget.textContent;
+        //     $.ajax({
+        //         url: '/students/' + id,
+        //         type: 'get',
+        //         success: function (item) {
+        //             var out = "";
+        //             out += "<ul>";
+        //             out += `<li>id : <span>${item[0].id}</span>`;
+        //             out += `<li>name : <span>${item[0].name}</span>`;
+        //             out += `<li>password : <span>${item[0].password}</span>`;
+        //             out += `<li>email : <span>${item[0].email}</span>`;
+        //             out += `<li>gender : <span>${item[0].gender}</span>`;
+        //             out += "</ul>";
+        //             $(out).appendTo('#content');
+        //         }
+        //     })
+        // })
+
+        $(document).on('click','.a_id a',function(e){
+            $('#content').empty();
+            var id=e.currentTarget.textContent;
+            // if(id == "회원목록보기"){
+            //     return;
+            // }
+            // console.log(id + "의 상세정보");
+            $.ajax({
+                url:'/students/'+id,
+                type:'get',
+                success:function(item){
+                    console.log("이건 오고 있나?", item);
+                    var out = '';
+                    out += "<div class='card'>";
+                    out += "<div class='card-body'>";
+                    out += `<h5 class="card-title">id : ${id} <button id=${id}>삭제</button></h5>`;
+                    out += `<p class="card-text">name : ${item[0].name} </p>`;
+                    out += `<p class="card-text">password : ${item[0].password} </p>`;
+                    out += `<p class="card-text">email : ${item[0].email} </p>`;
+                    out += `<p class="card-text">gender : ${item[0].gender} </p>`;
+                    out += '<a href="#" onclick="memberLoad()" class="btn btn-primary">Go to Main</a>';
+                    out += "</div>";
+                    out += "</div>";
+                    $('#content').append(out);
+                }
+            })
+        });
+
+
     </script>
 
 </body>
